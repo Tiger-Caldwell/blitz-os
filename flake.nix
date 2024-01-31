@@ -1,7 +1,7 @@
 {
   outputs = { self, nixpkgs }:
     let
-      derivInfo = pkgs: rec {
+      derivInfo = nativePkgs: pkgs: rec {
         name = "blitz";
         src = pkgs.fetchFromGitHub {
           owner = "BlitzOSProject";
@@ -10,6 +10,8 @@
           hash = "sha256-/zzxD4Nt2VJB8n9cM1fGpD7cOCc8JwuewzwipngY6RU=";
           sparseCheckout = [ "BlitzBin/Ubuntu64" ];
         };
+        buildInputs = [ pkgs.gcc-unwrapped.lib ];
+        nativeBuildInputs = [ nativePkgs.makeWrapper ];
         installPhase = ''
           mkdir -p $out/bin
           cd ${src}/BlitzBin/Ubuntu64
@@ -17,22 +19,27 @@
           chmod +x $out/bin/*
         '';
         preFixup = ''
-          cd $out/bin
-            for file in ./*
-            do
-              patchelf \
-                --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-                $file
-            done
+          for file in $out/bin/*
+          do
+            patchelf \
+              --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+              $file
+          done
+        '';
+        postFixup = ''
+          for file in $out/bin/*
+          do
+            wrapProgram $file --set LD_LIBRARY_PATH "${pkgs.gcc-unwrapped.lib}/lib"
+          done
         '';
       };
     in rec {
       packages."x86_64-linux".default =
         let pkgs = import nixpkgs { system = "x86_64-linux"; };
-        in pkgs.pkgsi686Linux.stdenv.mkDerivation (derivInfo pkgs);
+        in pkgs.pkgsi686Linux.stdenv.mkDerivation (derivInfo pkgs pkgs.pkgsi686Linux);
       packages."i686-linux".default =
         let pkgs = import nixpkgs { system = "i686-linux"; };
-        in pkgs.stdenv.mkDerivation (derivInfo pkgs);
+        in pkgs.stdenv.mkDerivation (derivInfo pkgs pkgs);
 
       formatter.x86_64-linux =
         (import nixpkgs { system = "x86_64-linux"; }).nixfmt;
