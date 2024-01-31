@@ -3,18 +3,12 @@
     let
       derivInfo = nativePkgs: pkgs: rec {
         name = "blitz";
-        src = pkgs.fetchFromGitHub {
-          owner = "BlitzOSProject";
-          repo = "BlitzOSProject.github.io";
-          rev = "3c60e8e4ac2073ba94802712125b429b2b5ffc49";
-          hash = "sha256-/zzxD4Nt2VJB8n9cM1fGpD7cOCc8JwuewzwipngY6RU=";
-          sparseCheckout = [ "BlitzBin/Ubuntu64" ];
-        };
+        src = ./blitz-bin.tar.gz;
+        sourceRoot = ".";
         buildInputs = [ pkgs.gcc-unwrapped.lib ];
         nativeBuildInputs = [ nativePkgs.makeWrapper ];
         installPhase = ''
           mkdir -p $out/bin
-          cd ${src}/BlitzBin/Ubuntu64
           cp kpl asm lddd blitz diskUtil dumpObj hexdump check endian $out/bin
           chmod +x $out/bin/*
         '';
