@@ -7,7 +7,8 @@
           owner = "BlitzOSProject";
           repo = "BlitzOSProject.github.io";
           rev = "3c60e8e4ac2073ba94802712125b429b2b5ffc49";
-          hash = "sha256-DJWV0vBdDGPBylapwbFjLZyybse+Nw8DSEpM07arbdU=";
+          hash = "sha256-/zzxD4Nt2VJB8n9cM1fGpD7cOCc8JwuewzwipngY6RU=";
+          sparseCheckout = [ "BlitzBin/Ubuntu64" ];
         };
         installPhase = ''
           mkdir -p $out/bin
