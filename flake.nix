@@ -9,7 +9,7 @@
         nativeBuildInputs = [ nativePkgs.makeWrapper ];
         installPhase = ''
           mkdir -p $out/bin
-          cp kpl asm lddd blitz diskUtil dumpObj hexdump check endian $out/bin
+          cp kpl asm lddd blitz diskUtil dumpObj hexdump check endian toyfs $out/bin
           chmod +x $out/bin/*
         '';
         preFixup = ''
